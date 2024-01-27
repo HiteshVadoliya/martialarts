@@ -35,7 +35,10 @@
   <link rel="stylesheet" href="<?php echo base_url();?>public/plugins/toastr/toastr.min.css">
   <script src="<?php echo base_url();?>public/plugins/toastr/toastr.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  
+  <script>
+    var site_url = '<?php echo base_url(); ?>';
+  </script>
+
   
   <style type="text/css">
     .main-header {

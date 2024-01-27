@@ -22,6 +22,7 @@
     <section class="content-header">
         <div class="container-fluid">
             <a class="btn btn-primary" href="<?= base_url($url.'/add'); ?>">+ Add <?= $MainTitle ?></a>
+            <a class="btn btn-primary export_pdf" href="javascript::"><i class="" ></i>Export PDF</a>
         </div>
     </section>
 
@@ -112,6 +113,34 @@
                 } else {
                     toastr.error(response.msg);
                 } 
+                //$('#posts').DataTable().ajax.reload(null, false);
+            }
+        });
+                
+    }); 
+    
+    $(document).on("click",".export_pdf",function(){
+        $.ajax(
+        {
+            url: '<?= site_url($url.'/export_pdf/')?>',
+            dataType: "JSON",
+            method:"POST",
+            data: {
+            },
+            success: function (response)
+            { 
+                pdf_download = site_url + 'public/uploads/pdf_export/' +response.filename;
+                setTimeout(function(){
+                    window.open(
+                        pdf_download,
+                        '_blank'
+                    );
+                },3000);
+                // if(response.status) {
+                //     toastr.success(response.msg);
+                // } else {
+                //     toastr.error(response.msg);
+                // } 
                 //$('#posts').DataTable().ajax.reload(null, false);
             }
         });

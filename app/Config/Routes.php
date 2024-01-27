@@ -57,6 +57,7 @@ $routes->get('/admin/schedule/edit/(:any)', 'Admin\ScheduleController::add/$1');
 $routes->post('/admin/schedule/store/', 'Admin\ScheduleController::store');
 $routes->post('/admin/schedule/delete/', 'Admin\ScheduleController::delete');
 $routes->post('/admin/schedule/status/', 'Admin\ScheduleController::status');
+$routes->post('/admin/schedule/export_pdf/', 'Admin\ScheduleController::export_pdf');
 
 
 

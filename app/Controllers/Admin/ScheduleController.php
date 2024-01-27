@@ -7,6 +7,7 @@ use App\Models\Admin\ScheduleModel;
 use App\Models\Admin\SchoolAllModel;
 use App\Models\HWTModel;
 use Config\Services;
+use Dompdf\Dompdf;
 
 class ScheduleController extends BaseController
 {
@@ -65,7 +66,7 @@ class ScheduleController extends BaseController
         $MainModel = $this->model;
 
         if(isset($edit_id) && !empty($edit_id)) {
-            echo $edit_id;
+            
             $db = db_connect();
             $query = $db->table('schedule as s');
             $query->select('*');
@@ -153,7 +154,14 @@ class ScheduleController extends BaseController
  
         return $this->response->setJSON($response);
     }
+    function get_week( $date ){
+        $ddate = date('Y-m-d',strtotime($date));
+        $duedt = explode("-", $ddate);
+        $date  = mktime(0, 0, 0, $duedt[1], $duedt[2], $duedt[0]);
+        $week  = (int)date('W', $date);
+        return $week;
 
+    }
     function store()
     {
         $post = $this->request->getVar(); 
@@ -162,6 +170,9 @@ class ScheduleController extends BaseController
         $mode = $post['mode'];
         $schedule_title = $post['schedule_title'];
         $schedule_time = date('Y-m-d H:i',strtotime($post['schedule_time']));
+        $week = $this->get_week( $post['schedule_time'] ); 
+        $day = date('l',strtotime($post['schedule_time']));
+        $day_number = date('N',strtotime($post['schedule_time']));
         $school_pid = $post['school_pid'];
         
         $response = array();       
@@ -170,6 +181,9 @@ class ScheduleController extends BaseController
             'schedule_title' => $schedule_title,
             'schedule_time' => $schedule_time,
             'school_pid' => $school_pid,
+            'week' => $week,
+            'day' => $day,
+            'day_number' => $day_number,
         );
        
         if(isset($post['edit_id']) && $post['mode'] == 'edit') {
@@ -249,6 +263,47 @@ class ScheduleController extends BaseController
 
         echo json_encode($response);
         die;
+    }
+
+    function export_pdf() {
+
+        $post = $this->request->getVar();
+        
+        $db = db_connect();
+		$builder = $db->table( 'schedule' );
+		$builder->where( array( 'isDelete' => 0, 'status' => 1 ) );
+		$builder->orderBy('week', 'ASC');
+		$builder->orderBy('day_number', 'ASC');
+		$result = $builder->get()->getResultArray();
+
+        $SchoolAllModel = new SchoolAllModel();;
+        $data['schools'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
+        $data['result'] = $result;        
+        $htmlContent = view('admin/'.$this->folder.'pdf_details', $data);
+
+        $pdfName = "schedule_".date('mdY')."_".time().'.pdf'; 
+
+        if (!file_exists(EXPORT_PDF)) {
+            mkdir(EXPORT_PDF, 0777, true);
+        }
+        
+        $filename_return = $this->createPDF(EXPORT_PDF.$pdfName, $htmlContent , $orientation = 'A4');
+        $response = array();
+        $response['filename'] = $pdfName;
+        $response['filepath'] = EXPORT_PDF;
+
+        echo json_encode($response);
+        die;
+    }
+
+    public function createPDF($fileName,$html,$orientation = 'A4') {
+
+        $dompdf = new Dompdf();
+        
+        $dompdf->loadHtml($html);
+        $dompdf->render();
+        file_put_contents( $fileName , $dompdf->output());
+        
     }
     
 }
