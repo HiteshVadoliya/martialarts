@@ -18,6 +18,8 @@ class ScheduleModel extends Model
         'day',
         'week',
         'day_number',
+        'assign_pid',
+        'assign_as',
         'status',
         'isDelete',
         'created_at',

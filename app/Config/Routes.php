@@ -59,6 +59,15 @@ $routes->post('/admin/schedule/delete/', 'Admin\ScheduleController::delete');
 $routes->post('/admin/schedule/status/', 'Admin\ScheduleController::status');
 $routes->post('/admin/schedule/export_pdf/', 'Admin\ScheduleController::export_pdf');
 
+$routes->get('/admin/assigning/', 'Admin\AssignController::index');
+$routes->post('/admin/assigning/ajax_list/', 'Admin\AssignController::ajax_list');
+$routes->get('/admin/assigning/add/', 'Admin\AssignController::add');
+$routes->get('/admin/assigning/edit/(:any)', 'Admin\AssignController::add/$1');
+$routes->post('/admin/assigning/store/', 'Admin\AssignController::store');
+$routes->post('/admin/assigning/delete/', 'Admin\AssignController::delete');
+$routes->post('/admin/assigning/status/', 'Admin\AssignController::status');
+$routes->post('/admin/assigning/export_pdf/', 'Admin\AssignController::export_pdf');
+
 
 
 
