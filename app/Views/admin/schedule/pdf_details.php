@@ -1,3 +1,6 @@
+<?php
+use App\Models\HWTModel;
+?>
 <style type="text/css">
    table{
       background-color: #fff;  
@@ -76,17 +79,23 @@
    {
       page-break-inside: auto;
    }
+   ul.sch_ul_li {
+        list-style-type: none;
+        padding: 0;
+        margin-top: 10px;
+        font-size: 14px;
+        line-height: 21px;
+    }
+    td.school_heading {
+        text-align: center;
+        font-size: 16px;
+    }
+
+    strong.day_name {
+        font-size: 16px;
+    }
 </style>
-<?php
-$day_list = array(
-    '1' => 'Monday',
-    '2' => 'Tuesday',
-    '3' => 'Wednesday',
-    '4' => 'Thursday',
-    '5' => 'Friday',
-    '6' => 'Saturday'
-);
-?>
+
 <table class="" cellspacing="0" cellpadding="0">   
 <center><h1>MASTER SCHEDULE</h1></center>
 </table>
@@ -100,7 +109,7 @@ $day_list = array(
                     <?php
                     if(isset($schools) && !empty($schools)) {
                         foreach ($schools as $s_key => $s_value) {
-                            ?><td><strong><?= $s_value['school_title'] ?><strong></td><?php
+                            ?><td class="school_heading"><strong><?= strtoupper($s_value['school_title']) ?><strong></td><?php
                         }
                     }
                     ?>
@@ -109,36 +118,37 @@ $day_list = array(
             <tbody>
                 <?php
                 $db = db_connect();
-                
-                if(isset($day_list) && !empty($day_list)) {
-                    foreach ($day_list as $day_key => $day_value) {
+
+                if(isset($weekdays) && !empty($weekdays)) {
+                    foreach ($weekdays as $week_key => $week_value) {
                         if(isset($schools) && !empty($schools)) {
                             echo '<tr>';
                             foreach ($schools as $s_key => $s_value) {
                                 $school_id = $s_value['school_id'];
-                                $day_number = $day_key;
+                                $weekdays_pid = $week_value['weekdays_id'];
+                                $weekdays_day = $week_value['week_title'];
                                 
                                 $builder = $db->table( 'schedule' );
-                                $builder->where( array( 'isDelete' => 0, 'status' => 1, 'school_pid' => $school_id, 'day_number' => $day_number ) );
-                                $builder->orderBy('week', 'ASC');
-                                $builder->orderBy('day_number', 'ASC');
+                                $builder->where( array( 'isDelete' => 0, 'status' => 1, 'school_pid' => $school_id, 'weekday_pid' => $weekdays_pid ) );
                                 $result_list = $builder->get()->getResultArray();
-                                
                                 ?>
                                     <td>
-                                        <strong><?= $day_value ?></strong>
-                                        <?php
+                                       <strong class="day_name"><?= strtoupper($weekdays_day) ?></strong>
+                                       <?php
                                         if(isset($result_list) && !empty($result_list)) {
-                                            echo '<ul>';
+                                            echo '<ul class="sch_ul_li" >';
                                             foreach ($result_list as $res_key => $res_value) {
-                                                $display_list = $res_value['schedule_title'];
+                                                $schedule_id = $res_value['schedule_id'];
+                                                $s_data = HWTModel::get_schedule_details( $schedule_id );
+                                                $display_data = $s_data['day_time'].' '.$s_data['class_title'].' (<strong>'.$s_data['fname'].'</strong>)';
                                                 ?>
-                                                <li><?= $display_list ?></li>
+                                                <li><?= $display_data ?></li>
                                                 <?php
                                             }
                                             echo '</ul>';
                                         }
                                         ?>
+
                                     </td>                                
                                 <?php
                             }
@@ -146,9 +156,7 @@ $day_list = array(
                         }
                     }
                 }
-
-                ?>
-              
+                ?>              
             </tbody>
          </table>
       </td>      

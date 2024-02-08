@@ -39,7 +39,8 @@ class ScheduleController extends BaseController
     }
     public function index( ): string
     {   
-
+        // HWTModel::get_schedule_details( 1 );
+        // die;
         $data['Controller'] = $this->Controller;
         $data['url'] = $this->url;
         $data['MainTitle'] = $this->MainTitle;
@@ -303,17 +304,18 @@ class ScheduleController extends BaseController
         $post = $this->request->getVar();
         
         $db = db_connect();
-		$builder = $db->table( 'schedule' );
-		$builder->where( array( 'isDelete' => 0, 'status' => 1 ) );
-		$builder->orderBy('week', 'ASC');
-		$builder->orderBy('day_number', 'ASC');
-		$result = $builder->get()->getResultArray();
+		// $builder = $db->table( 'schedule' );
+		// $builder->where( array( 'isDelete' => 0, 'status' => 1 ) );
+		// $builder->orderBy('week', 'ASC');
+		// $builder->orderBy('day_number', 'ASC');
+		// $result = $builder->get()->getResultArray();
 
         $SchoolAllModel = new SchoolAllModel();;
         $data['schools'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
-        $data['result'] = $result;        
+        $data['weekdays'] = HWTModel::get_row( 'weekdays', array( 'isDelete' => 0,'status' => 1 ), 'list' );
+             
         $htmlContent = view('admin/'.$this->folder.'pdf_details', $data);
-
+        
         $pdfName = "schedule_".date('mdY')."_".time().'.pdf'; 
 
         if (!file_exists(EXPORT_PDF)) {
