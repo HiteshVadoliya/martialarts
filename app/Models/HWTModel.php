@@ -22,5 +22,17 @@ class HWTModel extends Model
 		$builder->where( array( $wh) );
 		$result = $builder->get()->getResultArray();
 		return $result;
-	}   
+	}
+
+	public static function get_row( $table, $wh, $type = 'list' ) {
+        $db = db_connect();
+        $builder = $db->table($table);
+        $builder->where($wh);
+        $query = $builder->get();
+        if( $type == 'list' ) {
+            return $query->getResultArray();
+        } else {
+            return $query->getRowResult();
+        }
+    }
 }

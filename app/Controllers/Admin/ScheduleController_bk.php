@@ -62,23 +62,6 @@ class ScheduleController extends BaseController
         $data['mode'] = 'add';
         $SchoolAllModel = new SchoolAllModel();;
         $data['school_pid'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
-
-        $data['class_pid'] = HWTModel::get_row( 'classes_all', array( 'isDelete' => 0, 'status' => 1 ) );
-        $data['weekdays_pid'] = HWTModel::get_row( 'weekdays', array( 'isDelete' => 0, 'status' => 1 ) );
-
-        $db = db_connect();
-        $builder = $db->table('tbl_user as u');
-        $wh = array(
-            'isDelete' => 0,
-            'status' => 1,
-            'role_pid' => 2,
-        );
-        $builder->where( $wh );
-        $builder->join( 'tbl_user_role tr', 'tr.user_pid = u.user_id' );
-        $query = $builder->get();
-        $data['instructor_pid'] = $query->getResultArray();
-       
-
         
         $MainModel = $this->model;
 
@@ -129,7 +112,7 @@ class ScheduleController extends BaseController
         $totalRecordwithFilter = $users->select($this->id)
             ->where('isDelete',0)
             ->groupStart()
-            ->orLike('class_pid', $searchValue)
+            ->orLike('schedule_title', $searchValue)
             ->groupEnd()
             ->countAllResults();
  
@@ -137,7 +120,7 @@ class ScheduleController extends BaseController
         $records = $users->select('*')
             ->where('isDelete',0)
             ->groupStart()
-            ->orLike('class_pid', $searchValue)
+            ->orLike('schedule_title', $searchValue)
             ->groupEnd()
             ->orderBy($columnName,$columnSortOrder)
             ->findAll($rowperpage, $start);
@@ -149,20 +132,11 @@ class ScheduleController extends BaseController
             $statuslbl = $post['status'] == '1' ? 'Active' : 'Deactive';
             $statusColor = $post['status'] == '1' ? 'success' : 'danger';
             $nestedData[$this->id] = $post[$this->id];
-
-            $class_pid = HWTModel::get_row('classes_all', array( 'class_id' => $post['class_pid']));
-            $nestedData['class_pid'] = $class_pid[0]['class_title'];
-
-            $school_pid = HWTModel::get_row('school_all', array( 'school_id' => $post['school_pid']));
-            $nestedData['school_pid'] = $school_pid[0]['school_title'];
-
-            $instructor_pid = HWTModel::get_row('tbl_user', array( 'user_id' => $post['instructor_pid']));
-            $nestedData['instructor_pid'] = $instructor_pid[0]['fname'];
-
-            $weekday_pid = HWTModel::get_row('weekdays', array( 'weekdays_id' => $post['weekday_pid']));
-            $nestedData['weekday_pid'] = $weekday_pid[0]['week_title'].' '.$post['day_time'];
-            $nestedData['effective_date_from'] = 'From : '.date('Y-m-d',strtotime($post['effective_date_from'])).' To : '.date('Y-m-d',strtotime($post['effective_date_to']));
-
+            $nestedData['schedule_title'] = $post['schedule_title'];
+            $nestedData['schedule_time'] = date('Y-m-d H:i A',strtotime($post['schedule_time']));
+            $school_details = $SchoolAllModel->where( 'school_id', $post['school_pid'] )->findAll();
+            $nestedData['school_title'] = $school_details[0]['school_title'];
+            
             $nestedData['action'] = '<button data-id='.$post[$this->id].' class="btn btn-sm btn-danger rowDelete delete_'.$post[$this->id].'">Delete</button>
             <a href='.base_url().$this->url.'/edit/'.$post[$this->id].' data-id='.$post[$this->id].' class="btn btn-sm btn-info " >Edit</a>
             <button data-id='.$post[$this->id].' data-status='.$post['status'].' class="btn btn-sm btn-'.$statusColor.' rowStatus " >'.$statuslbl.'</button>';
@@ -192,31 +166,24 @@ class ScheduleController extends BaseController
     {
         $post = $this->request->getVar(); 
         
-        
         $edit_id = $post['edit_id'];
         $mode = $post['mode'];
-        
-        $class_pid = $post['class_pid'];
+        $schedule_title = $post['schedule_title'];
+        $schedule_time = date('Y-m-d H:i',strtotime($post['schedule_time']));
+        $week = $this->get_week( $post['schedule_time'] ); 
+        $day = date('l',strtotime($post['schedule_time']));
+        $day_number = date('N',strtotime($post['schedule_time']));
         $school_pid = $post['school_pid'];
-        $instructor_pid = $post['instructor_pid'];
-        $weekday_pid = $post['weekday_pid'];
-        $day_time = $post['day_time'];
-        $effective_date = $post['effective_date'];
-        $effective_date_ex = explode(" - ", $post['effective_date']);
-        $effective_date_from = date('Y-m-d',strtotime($effective_date_ex[0]));
-        $effective_date_to = date('Y-m-d',strtotime($effective_date_ex[1]));
-
+        
         $response = array();       
         $MainModel = $this->model;
         $data = array(
-            'class_pid' => $class_pid,
+            'schedule_title' => $schedule_title,
+            'schedule_time' => $schedule_time,
             'school_pid' => $school_pid,
-            'instructor_pid' => $instructor_pid,
-            'weekday_pid' => $weekday_pid,
-            'day_time' => $day_time,
-            'effective_date' => $effective_date,
-            'effective_date_from' => $effective_date_from,
-            'effective_date_to' => $effective_date_to,
+            'week' => $week,
+            'day' => $day,
+            'day_number' => $day_number,
         );
        
         if(isset($post['edit_id']) && $post['mode'] == 'edit') {
@@ -336,37 +303,7 @@ class ScheduleController extends BaseController
         $dompdf->loadHtml($html);
         $dompdf->render();
         file_put_contents( $fileName , $dompdf->output());
-    }
-
-    function export_pdf_old() {
-
-        $post = $this->request->getVar();
         
-        $db = db_connect();
-		$builder = $db->table( 'schedule' );
-		$builder->where( array( 'isDelete' => 0, 'status' => 1 ) );
-		$builder->orderBy('week', 'ASC');
-		$builder->orderBy('day_number', 'ASC');
-		$result = $builder->get()->getResultArray();
-
-        $SchoolAllModel = new SchoolAllModel();;
-        $data['schools'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
-        $data['result'] = $result;        
-        $htmlContent = view('admin/'.$this->folder.'pdf_details', $data);
-
-        $pdfName = "schedule_".date('mdY')."_".time().'.pdf'; 
-
-        if (!file_exists(EXPORT_PDF)) {
-            mkdir(EXPORT_PDF, 0777, true);
-        }
-        
-        $filename_return = $this->createPDF(EXPORT_PDF.$pdfName, $htmlContent , $orientation = 'A4');
-        $response = array();
-        $response['filename'] = $pdfName;
-        $response['filepath'] = EXPORT_PDF;
-
-        echo json_encode($response);
-        die;
     }
     
 }

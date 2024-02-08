@@ -58,10 +58,10 @@
                         <div class="card-body">
                             <input type="hidden" name="edit_id" id="edit_id" value="<?= (isset($edit) && !empty($edit[$id])) ? $edit[$id] : ''; ?>">                
                             <input type="hidden" name="mode" id="mode" value="<?= $mode ?>">
-                            <!-- <div class="form-group">
+                            <div class="form-group">
                                 <label for="">Title</label>
                                 <input type="text" class="form-control" id="schedule_title" name="schedule_title" placeholder="Schedule" value="<?= (isset($edit) && !empty($edit['schedule_title'])) ? $edit['schedule_title'] : ''; ?>" >
-                            </div> -->
+                            </div>
 
                             <div class="form-group">
                               <label for="">School</label>
@@ -81,93 +81,9 @@
                                 ?>                                
                               </select>
                             </div>
-
-                            <div class="form-group">
-                              <label for="">Class</label>
-                                <select class="form-control select2" id="class_pid" name="class_pid">
-                                <?php
-                                if(isset($class_pid) && !empty($class_pid)) {
-                                  foreach ($class_pid as $c_key => $c_value) {
-                                    $sel = '';
-                                    if( isset($edit) && $edit['class_pid'] == $c_value['class_id'] ) {
-                                      $sel = 'selected';
-                                    }
-                                    ?>
-                                    <option value="<?= $c_value['class_id'] ?>" <?= $sel ?>><?= $c_value['class_title']; ?></option>
-                                    <?php
-                                  }
-                                }
-                                ?>                                
-                              </select>
-                            </div>
                             
-                            <div class="form-group">
-                              <label for="">Instructor</label>
-                                <select class="form-control select2" id="instructor_pid" name="instructor_pid">
-                                <?php
-                                if(isset($instructor_pid) && !empty($instructor_pid)) {
-                                  foreach ($instructor_pid as $i_key => $i_value) {
-                                    $sel = '';
-                                    if( isset($edit) && $edit['instructor_pid'] == $i_value['user_id'] ) {
-                                      $sel = 'selected';
-                                    }
-                                    ?>
-                                    <option value="<?= $i_value['user_id'] ?>" <?= $sel ?>><?= $i_value['fname'].' '.$i_value['lname']; ?></option>
-                                    <?php
-                                  }
-                                }
-                                ?>                                
-                              </select>
-                            </div>
 
                             <div class="form-group">
-                              <label for="">Weekday</label>
-                                <select class="form-control select2" id="weekday_pid" name="weekday_pid">
-                                <?php
-                                if(isset($weekdays_pid) && !empty($weekdays_pid)) {
-                                  foreach ($weekdays_pid as $w_key => $w_value) {
-                                    $sel = '';
-                                    if( isset($edit) && $edit['weekday_pid'] == $w_value['weekdays_id'] ) {
-                                      $sel = 'selected';
-                                    }
-                                    ?>
-                                    <option value="<?= $w_value['weekdays_id'] ?>" <?= $sel ?>><?= $w_value['week_title']; ?></option>
-                                    <?php
-                                  }
-                                }
-                                ?>                                
-                              </select>
-                            </div>
-
-                            <div class="bootstrap-timepicker">
-                                <div class="form-group">
-                                    <label>Time picker:</label>
-
-                                    <div class="input-group date" id="timepicker" data-target-input="nearest">
-                                        <input type="text" class="form-control datetimepicker-input" data-target="#timepicker" name="day_time" id="day_time" value="<?= (isset($edit) && !empty($edit['day_time'])) ? $edit['day_time'] : ''; ?>" />
-                                        <div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
-                                            <div class="input-group-text"><i class="far fa-clock"></i></div>
-                                        </div>
-                                    </div>
-                                    <!-- /.input group -->
-                                </div>
-                                <!-- /.form group -->
-                            </div>
-
-                           
-                            <div class="form-group">
-                              <label>Effective Date Range</label>
-                              <div class="input-group">
-                                  <div class="input-group-prepend">
-                                      <span class="input-group-text">
-                                      <i class="far fa-calendar-alt"></i>
-                                    </span>
-                                  </div>
-                                  <input type="text" class="form-control float-right hwt_date" id="effective_date" name="effective_date" value="<?= (isset($edit) && !empty($edit['effective_date'])) ? $edit['effective_date'] : ''; ?>">
-                              </div>
-                            </div>
-
-                            <!-- <div class="form-group">
                               <label>Schedule Date & Time</label>
                               <div class="input-group">
                                   <div class="input-group-prepend">
@@ -177,7 +93,7 @@
                                   </div>
                                   <input type="text" class="form-control float-right hwt_date" id="schedule_time" name="schedule_time" value="<?= (isset($edit) && !empty($edit['schedule_time'])) ? $edit['schedule_time'] : ''; ?>">
                               </div>
-                            </div> -->
+                            </div>
                             
                         </div>
                     
@@ -191,29 +107,18 @@
         </div>
     </div>
   </section>
-
-  
-<!-- Tempusdominus Bootstrap 4 -->
-<script src="<?php echo base_url();?>public/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-
+ 
   <script>
-    $('#timepicker').datetimepicker({
-        // format: 'LT',
-        format: 'HH:mm',
-        pickDate: false,
-        pickSeconds: false,
-        pick12HourFormat: false
-    })
     $('.hwt_date').daterangepicker({
-        "singleDatePicker": false,
+        "singleDatePicker": true,
         "showDropdowns": true,
-        "showISOWeekNumbers": false,
-        "timePicker": false,
+        "showISOWeekNumbers": true,
+        "timePicker": true,
         "linkedCalendars": false,
         "showCustomRangeLabel": false,
         "minDate":new Date(),
         "locale": {
-              format: 'YYYY-MM-DD',
+              format: 'YYYY-MM-DD hh:mm A',
           }        
     }, function(start, end, label) {
       console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
@@ -256,9 +161,9 @@
     submitHandler: function(form) {
 
       var btn_old_val = $(".custom_submit").text();
-      // $(".custom_submit").text(btn_old_val+'...');
-      // $(".custom_submit").text('<?php echo WAIT; ?>');
-      // $(".custom_submit").attr("disabled", true);
+      $(".custom_submit").text(btn_old_val+'...');
+      $(".custom_submit").text('<?php echo WAIT; ?>');
+      $(".custom_submit").attr("disabled", true);
         $.ajax({
           url: '<?php echo base_url($url.'/store') ?>',
           type: 'POST',

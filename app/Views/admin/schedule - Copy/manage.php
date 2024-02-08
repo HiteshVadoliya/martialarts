@@ -40,11 +40,9 @@
                             <thead>
                                 <tr>
                                     <th>Id</th>
-                                    <th>Class</th>
+                                    <th>Schedule</th>
+                                    <th>Time</th>
                                     <th>School Name</th>
-                                    <th>Instructor</th>
-                                    <th>Weekday</th>
-                                    <th>Effective Date</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -89,11 +87,9 @@
         },
         'columns': [
             { data: 'schedule_id' },
-            { data: 'class_pid' },
-            { data: 'school_pid' },
-            { data: 'instructor_pid' },
-            { data: 'weekday_pid' },
-            { data: 'effective_date_from' },
+            { data: 'schedule_title' },
+            { data: 'schedule_time' },
+            { data: 'school_title' },
             { data: 'action' },
         ]
     });

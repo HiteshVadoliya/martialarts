@@ -51,12 +51,12 @@ $action = $uri->getTotalSegments() >= 3 && $uri->getSegment(3) ? $uri->getSegmen
                         <p>Schedules</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a href="<?php echo base_url('admin/assigning'); ?>" class="nav-link <?= $segment AND $segment == "assigning" ? 'active' : ''; ?>">
                         <i class="far fa-circle nav-icon"></i>
                         <p>Assigning</p>
                     </a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a href="<?php echo base_url('admin/classes'); ?>" class="nav-link <?= $segment AND $segment == "classes" ? 'active' : ''; ?>">
                         <i class="far fa-circle nav-icon"></i>
