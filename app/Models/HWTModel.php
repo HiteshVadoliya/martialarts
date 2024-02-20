@@ -54,4 +54,21 @@ class HWTModel extends Model
 		// print_r($dd);
 		// echo '</pre>';
 	}
+
+	public static function get_user_by_id( $user_id ) {
+
+		$wh = array(
+			'user_id' => $user_id,
+		);
+		$db = db_connect();
+        $builder = $db->table( 'tbl_user tu' );
+        $builder->where($wh);
+        $builder->join( ' tbl_user_role tur', 'tur.user_pid = tu.user_id' );
+        $builder->join( 'tbl_role tr', 'tr.role_id = tur.role_pid' );
+        $query = $builder->get();
+        return $query->getRowArray();
+		// echo '<pre>';
+		// print_r($dd);
+		// echo '</pre>';
+	}
 }

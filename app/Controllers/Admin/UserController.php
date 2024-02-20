@@ -49,7 +49,7 @@ class UserController extends BaseController
         $data['url'] = $this->url;
         $data['MainTitle'] = $this->MainTitle;
         $data['pg_title'] = $this->MainTitle.' LIST';
-        
+        $data = $this->global_data();
         $db = db_connect();
 
         $Users_Model = new Users_Model();
@@ -57,7 +57,36 @@ class UserController extends BaseController
         $phrases_details = $Users_Model->paginate(15);
         $data['pagination_link'] = $Users_Model->pager;        
         $data['phrases_details'] = $phrases_details;
-        
+
+        $RoleModel = new RoleModel();;
+        $data['roles_list'] = $RoleModel->where('role_id !=',1)->findAll();
+
+        $by_role = (isset($_GET['by_role']))? $_GET['by_role'] : '';
+        $data['by_role'] = $by_role;
+        $wh = array(
+			'isDelete' => 0,
+			'role_id !=' => 1,
+		);
+        if( $by_role > 0 ) {
+            $wh['role_id'] = $by_role;
+        }
+        $builder = $db->table( 'tbl_user tu' );
+        $builder->where($wh);
+        $builder->join( ' tbl_user_role tur', 'tur.user_pid = tu.user_id' );
+        $builder->join( 'tbl_role tr', 'tr.role_id = tur.role_pid' );
+        $query = $builder->get();
+        $records = $query->getResultArray();
+        $data['records_list'] = $records;
+
+        // $query = $Users_Model->select('*');
+        // $query->where('isDelete',0);
+        // if( $by_role != '' ) {
+        //     $query->where('user_id',$by_role);
+        // }
+        // $query->where('user_id !=',1);
+        // $records = $query->findAll();
+        // $data['records_list'] = $records;
+
         return view('admin/'.$this->folder.'manage', $data);
     }
 
@@ -105,6 +134,7 @@ class UserController extends BaseController
 
         $request = service('request');
         $postData = $request->getPost();
+        
         $dtpostData = $postData['data'];
         $response = array();
  
@@ -153,6 +183,8 @@ class UserController extends BaseController
             $statusColor = $post['status'] == '1' ? 'success' : 'danger';
             $nestedData['user_id'] = $post['user_id'];
             $nestedData['fname'] = $post['fname'];
+            $userDetails = HWTModel::get_user_by_id( $post['user_id'] );            
+            $nestedData['role'] = $userDetails['role'];
             $nestedData['email'] = $post['email'];
             
             $nestedData['action'] = '<button data-id='.$post[$this->id].' class="btn btn-sm btn-danger rowDelete delete_'.$post[$this->id].'">Delete</button>

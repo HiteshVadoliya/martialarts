@@ -3,21 +3,21 @@ namespace App\Controllers\ADMIN;
 
 
 use App\Controllers\BaseController;
-use App\Models\Admin\ScheduleModel;
+use App\Models\Admin\PaymentModel;
 use App\Models\Admin\SchoolAllModel;
 use App\Models\HWTModel;
 use Config\Services;
 use Dompdf\Dompdf;
-class ScheduleController extends BaseController
+class PaymentController extends BaseController
 {
     function __construct()
     { 
-        $this->folder = 'schedule/';
-        $this->Controller = 'ScheduleController';
-        $this->url = 'admin/schedule';
-        $this->MainTitle = "Schedule";
-        $this->id = "schedule_id";
-        $this->model = new ScheduleModel();
+        $this->folder = 'payment/';
+        $this->Controller = 'PaymentController';
+        $this->url = 'admin/payment';
+        $this->MainTitle = "Payment";
+        $this->id = "payment_id";
+        $this->model = new PaymentModel();
         
         $session = Services::session();
         if ($session->get('is_admin_login') == NULL) {
@@ -47,10 +47,10 @@ class ScheduleController extends BaseController
         
         $db = db_connect();
 
-        $ScheduleModel = new ScheduleModel();
+        $PaymentModel = new PaymentModel();
 
-        $phrases_details = $ScheduleModel->paginate(2);
-        $data['pagination_link'] = $ScheduleModel->pager;        
+        $phrases_details = $PaymentModel->paginate(2);
+        $data['pagination_link'] = $PaymentModel->pager;        
         $data['phrases_details'] = $phrases_details;
         
         return view('admin/'.$this->folder.'manage', $data);
@@ -60,11 +60,11 @@ class ScheduleController extends BaseController
     {
         $data = $this->global_data();
         $data['mode'] = 'add';
-        $SchoolAllModel = new SchoolAllModel();;
-        $data['school_pid'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
+        // $SchoolAllModel = new SchoolAllModel();;
+        // $data['school_pid'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
 
-        $data['class_pid'] = HWTModel::get_row( 'classes_all', array( 'isDelete' => 0, 'status' => 1 ) );
-        $data['weekdays_pid'] = HWTModel::get_row( 'weekdays', array( 'isDelete' => 0, 'status' => 1 ) );
+        // $data['class_pid'] = HWTModel::get_row( 'classes_all', array( 'isDelete' => 0, 'status' => 1 ) );
+        // $data['weekdays_pid'] = HWTModel::get_row( 'weekdays', array( 'isDelete' => 0, 'status' => 1 ) );
 
         $db = db_connect();
         $builder = $db->table('tbl_user as u');
@@ -85,16 +85,22 @@ class ScheduleController extends BaseController
         if(isset($edit_id) && !empty($edit_id)) {
             
             $db = db_connect();
-            $query = $db->table('schedule as s');
+            $query = $db->table('payment');
             $query->select('*');
-            $query->join('school_all as sc', 'sc.school_id = s.school_pid');
-            $query->where('s.schedule_id',$edit_id);
+            // $query->join(' as sc', 'sc.school_id = s.school_pid');
+            $query->where('payment_id',$edit_id);
             $user_data = $query->get()->getRowArray();
 
             // $Edit_data = $MainModel->where( $this->id, $edit_id )->first();
             $data['edit'] = $user_data;
             
             $data['mode'] = 'edit';
+
+            $query = $db->table('payment');
+            $query->select('*');
+            $query->where('payment_main_id',$edit_id);
+            $payment_data = $query->get()->getResultArray();
+            $data['payment_data'] = $payment_data;
         }
 
         $data['mode'] = $data['mode'];
@@ -120,7 +126,7 @@ class ScheduleController extends BaseController
         $searchValue = $dtpostData['search']['value']; // Search value
  
         ## Total number of records without filtering
-        $users = new ScheduleModel();
+        $users = new PaymentModel();
         $query_total_records = $users->select($this->id);
         $query_total_records ->where('isDelete',0);
         $totalRecords = $query_total_records ->countAllResults();
@@ -131,9 +137,10 @@ class ScheduleController extends BaseController
             $query_filter->where('instructor_pid',session('user_id'));    
         }
         $query_filter->where('isDelete',0);
-        $query_filter->groupStart();
-        $query_filter->orLike('class_pid', $searchValue);
-        $query_filter->groupEnd();
+        $query_filter->where('payment_main_id',NULL);
+        // $query_filter->groupStart();
+        // $query_filter->orLike('class_pid', $searchValue);
+        // $query_filter->groupEnd();
         $totalRecordwithFilter = $query_filter->countAllResults();;
  
         ## Fetch records
@@ -142,9 +149,10 @@ class ScheduleController extends BaseController
             $query->where('instructor_pid',session('user_id'));    
         }
         $query->where('isDelete',0);
-        $query->groupStart();
-        $query->orLike('class_pid', $searchValue);
-        $query->groupEnd();
+        $query->where('payment_main_id',NULL);
+        // $query->groupStart();
+        // $query->orLike('class_pid', $searchValue);
+        // $query->groupEnd();
         $query->orderBy($columnName,$columnSortOrder);
         $records = $query->findAll($rowperpage, $start);;
         
@@ -156,31 +164,19 @@ class ScheduleController extends BaseController
             $statusColor = $post['status'] == '1' ? 'success' : 'danger';
             $nestedData[$this->id] = $post[$this->id];
 
-            $class_pid = HWTModel::get_row('classes_all', array( 'class_id' => $post['class_pid']));
-            $nestedData['class_pid'] = $class_pid[0]['class_title'];
-
-            $school_pid = HWTModel::get_row('school_all', array( 'school_id' => $post['school_pid']));
-            $nestedData['school_pid'] = $school_pid[0]['school_title'];
-
-            $instructor_pid = HWTModel::get_row('tbl_user', array( 'user_id' => $post['instructor_pid']));
-            $nestedData['instructor_pid'] = $instructor_pid[0]['fname'];
-
-            $weekday_pid = HWTModel::get_row('weekdays', array( 'weekdays_id' => $post['weekday_pid']));
-            $nestedData['weekday_pid'] = $weekday_pid[0]['week_title'].' '.$post['day_time'];
             $nestedData['effective_date_from'] = 'From : '.date('Y-m-d',strtotime($post['effective_date_from'])).' To : '.date('Y-m-d',strtotime($post['effective_date_to']));
 
-            
-
-            $statuslblClass = $post['class_status'] == '1' ? 'Accepted' : 'Pending';
-            $statusColorClass = $post['class_status'] == '1' ? 'success' : 'danger';
+            // $statuslblClass = $post['class_status'] == '1' ? 'Accepted' : 'Pending';
+            // $statusColorClass = $post['class_status'] == '1' ? 'success' : 'danger';
 
             if(session('role') == 2) {
-                $nestedData['action'] = '&nbsp;<button data-id='.$post[$this->id].' data-status='.$post['class_status'].' class="btn btn-sm btn-'.$statusColorClass.' rowClassStatus " >'.$statuslblClass.'</button>';
+                // $nestedData['action'] = '&nbsp;<button data-id='.$post[$this->id].' data-status='.$post['class_status'].' class="btn btn-sm btn-'.$statusColorClass.' rowClassStatus " >'.$statuslblClass.'</button>';
             } else {
                 $nestedData['action'] = '<button data-id='.$post[$this->id].' class="btn btn-sm btn-danger rowDelete delete_'.$post[$this->id].'">Delete</button>
                 <a href='.base_url().$this->url.'/edit/'.$post[$this->id].' data-id='.$post[$this->id].' class="btn btn-sm btn-info " >Edit</a>
                 <button data-id='.$post[$this->id].' data-status='.$post['status'].' class="btn btn-sm btn-'.$statusColor.' rowStatus " >'.$statuslbl.'</button>';
-                $nestedData['action'] .= '&nbsp;<button data-id='.$post[$this->id].' data-status='.$post['class_status'].' class="btn btn-sm btn-'.$statusColorClass.' " >'.$statuslblClass.'</button>';
+
+                $nestedData['action'] = '<a href='.base_url().$this->url.'/edit/'.$post[$this->id].' data-id='.$post[$this->id].' class="btn btn-sm btn-info " >Edit</a>';
             }
             $data[] = $nestedData;
         }
@@ -211,11 +207,7 @@ class ScheduleController extends BaseController
         $edit_id = $post['edit_id'];
         $mode = $post['mode'];
         
-        $class_pid = $post['class_pid'];
-        $school_pid = $post['school_pid'];
-        $instructor_pid = $post['instructor_pid'];
-        $weekday_pid = $post['weekday_pid'];
-        $day_time = $post['day_time'];
+        //$instructor_pid = $post['instructor_pid'];
         $effective_date = $post['effective_date'];
         $effective_date_ex = explode(" - ", $post['effective_date']);
         $effective_date_from = date('Y-m-d',strtotime($effective_date_ex[0]));
@@ -224,33 +216,58 @@ class ScheduleController extends BaseController
         $response = array();       
         $MainModel = $this->model;
         $data = array(
-            'class_pid' => $class_pid,
-            'school_pid' => $school_pid,
-            'instructor_pid' => $instructor_pid,
-            'weekday_pid' => $weekday_pid,
-            'day_time' => $day_time,
             'effective_date' => $effective_date,
             'effective_date_from' => $effective_date_from,
             'effective_date_to' => $effective_date_to,
         );
        
         if(isset($post['edit_id']) && $post['mode'] == 'edit') {
+            $last_id = $edit_id = $post['edit_id'];
+            $instructor_pid = $post['instructor_pid'];
+            $total_hrs = $post['total_hrs'];
+            if(isset($instructor_pid) && !empty($instructor_pid)) {
+                foreach ($instructor_pid as $int_key => $int_value) {
+                    $wh = array(
+                        'payment_main_id' => $edit_id,
+                        'instructor_pid' => $int_value,
+                    );
+                    $user_details = HWTModel::get_row('tbl_user', array( 'user_id' => $int_value ));
+                    $hr_rate = $user_details[0]['hr_rate'];
+                    $total_hrs_rate = $total_hrs[$int_key];
+                    $total_payment = $hr_rate * $total_hrs_rate;
+                    $update_data = array(
+                        'payment_main_id' => $edit_id,
+                        'instructor_pid' => $int_value,
+                        'total_hrs' => $total_hrs_rate,
+                        'hourly_rate' => $hr_rate,
+                        'total_payment' => $total_payment,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    );
+                    HWTModel::add_or_update( 'payment', $wh , $update_data );
+                }
+            }
+          
             $data['updated_at'] = date('Y-m-d H:i:s');
             $MainModel->update( $edit_id, $data );
             $response['status'] = true;
             $response['msg'] = 'Data Updated Successfully';
+            $response['last_id'] = $last_id;
         } else {
             $res = $MainModel->insert( $data );
             $last_id = $MainModel->getInsertID();
 
             if( $res ) {
                 $response['status'] = true;
+                $response['last_id'] = $last_id;
                 $response['msg'] = 'Data inserted Successfully';
             } else {
                 $response['status'] = false;
+                $response['last_id'] = 0;
                 $response['msg'] = 'Something Went Wrong..!';
             }
+
         }
+        $response['url'] = base_url('admin/payment/edit/'.$last_id);
 
         $response['status'] = true;
         echo json_encode($response);
@@ -327,7 +344,8 @@ class ScheduleController extends BaseController
         $data = array(
             'isDelete' => 1
         );        
-        $res = $MainModel->update($wh, $data);
+        $res = $MainModel->delete( $did );
+        // $res = $MainModel->update($wh, $data);
         
         $response = array();
         if($res) {

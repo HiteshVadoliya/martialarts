@@ -28,7 +28,7 @@
                 <?php
             }
             ?>
-            <a class="btn btn-primary export_pdf" href="javascript::"><i class="" ></i>Export PDF</a>
+            <a class="btn btn-primary export_pdf" href="javascript::"><i class="" ></i>Export PDF (comming soon) </a>
         </div>
     </section>
 
@@ -46,11 +46,8 @@
                             <thead>
                                 <tr>
                                     <th>Id</th>
-                                    <th>Class</th>
-                                    <th>School Name</th>
-                                    <th>Instructor</th>
-                                    <th>Weekday</th>
-                                    <th>Effective Date</th>
+                                    <th>Time Interal</th>
+                                    <!-- <th>Effective Date</th> -->
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -94,11 +91,7 @@
             }
         },
         'columns': [
-            { data: 'schedule_id' },
-            { data: 'class_pid' },
-            { data: 'school_pid' },
-            { data: 'instructor_pid' },
-            { data: 'weekday_pid' },
+            { data: 'payment_id' },
             { data: 'effective_date_from' },
             { data: 'action' },
         ]

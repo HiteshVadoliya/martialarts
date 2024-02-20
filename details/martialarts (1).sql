@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 09, 2024 at 03:27 PM
+-- Generation Time: Feb 16, 2024 at 03:34 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -144,6 +144,7 @@ CREATE TABLE `schedule` (
   `week` int(11) NOT NULL,
   `day` varchar(50) NOT NULL,
   `day_number` int(11) NOT NULL,
+  `class_status` tinyint(4) DEFAULT 0,
   `status` tinyint(4) NOT NULL DEFAULT 1,
   `isDelete` tinyint(4) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
@@ -154,15 +155,17 @@ CREATE TABLE `schedule` (
 -- Dumping data for table `schedule`
 --
 
-INSERT INTO `schedule` (`schedule_id`, `class_pid`, `school_pid`, `instructor_pid`, `weekday_pid`, `day_time`, `effective_date_from`, `effective_date_to`, `effective_date`, `week`, `day`, `day_number`, `status`, `isDelete`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 2, 1, '10:00:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:54:00', NULL),
-(2, 3, 1, 8091, 1, '11:00:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:54:51', NULL),
-(3, 2, 1, 8092, 1, '12:10:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:55:23', NULL),
-(4, 1, 2, 2, 1, '14:30:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:56:01', NULL),
-(5, 3, 2, 8092, 1, '15:30:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:56:32', NULL),
-(6, 2, 3, 8091, 1, '14:10:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:57:02', NULL),
-(7, 1, 1, 8093, 2, '21:35:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:57:58', NULL),
-(8, 6, 1, 8093, 2, '15:10:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 0, '2024-02-08 19:58:33', NULL);
+INSERT INTO `schedule` (`schedule_id`, `class_pid`, `school_pid`, `instructor_pid`, `weekday_pid`, `day_time`, `effective_date_from`, `effective_date_to`, `effective_date`, `week`, `day`, `day_number`, `class_status`, `status`, `isDelete`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 2, 1, '10:00:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 1, 0, '2024-02-08 19:54:00', NULL),
+(2, 3, 1, 8091, 1, '11:00:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-08 19:54:51', NULL),
+(3, 2, 1, 8092, 1, '12:10:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-08 19:55:23', NULL),
+(4, 1, 2, 2, 1, '14:30:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-08 19:56:01', NULL),
+(5, 3, 2, 8092, 1, '15:30:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-08 19:56:32', NULL),
+(6, 2, 3, 8091, 1, '14:10:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-08 19:57:02', NULL),
+(7, 1, 1, 8093, 2, '21:35:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-08 19:57:58', NULL),
+(8, 6, 1, 8093, 2, '15:10:00', '2024-02-12', '2024-02-17', '2024-02-12 - 2024-02-17', 0, '', 0, 1, 1, 0, '2024-02-08 19:58:33', NULL),
+(9, 2, 2, 8091, 3, '08:35:00', '2024-02-16', '2024-02-17', '2024-02-16 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-16 08:46:27', NULL),
+(10, 1, 1, 2, 1, '13:47:00', '2024-02-16', '2024-02-17', '2024-02-16 - 2024-02-17', 0, '', 0, 0, 1, 0, '2024-02-16 08:47:49', NULL);
 
 -- --------------------------------------------------------
 
@@ -360,14 +363,14 @@ CREATE TABLE `tbl_user` (
 --
 
 INSERT INTO `tbl_user` (`user_id`, `fname`, `lname`, `username`, `password`, `email`, `b_date`, `level_pid`, `rank_pid`, `hr_rate`, `class_pid`, `location_pid`, `phone`, `image`, `is_active`, `status`, `isDelete`, `created_at`, `updated_at`) VALUES
-(1, 'admin', '', 'admin', '$2y$10$E4BY2GTa2hBB/ZW0ytTRXOwL6XrqVZnprg9HfgLvOxmlohVMl6Etu', 'admin@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, '1231230001', NULL, 1, 1, 0, '2024-01-21 09:20:40', NULL),
-(2, 'ekon ins', '', 'instructor', '$2y$10$KQOKdnsOe0ZAMorNxMntk.QmBX5248RgEc0zGEW.aa0cIbZAOGdG2', 'instructor@gmail.com', NULL, 1, 1, 10.00, '2', '2', '1231230002', '', 1, 1, 0, '2024-01-21 09:20:40', '2024-02-08 14:23:18'),
+(1, 'admin', '', 'mart', '$2y$10$E4BY2GTa2hBB/ZW0ytTRXOwL6XrqVZnprg9HfgLvOxmlohVMl6Etu', 'admin@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, '1231230001', NULL, 1, 1, 0, '2024-01-21 09:20:40', NULL),
+(2, 'ekon ins', '', 'instructor', '$2y$10$6ur358Fczm1sYaRV3Fy2J.w/seWmUy2napWmcGcfLndELTK5jgnhi', 'instructor@gmail.com', NULL, 1, 1, 10.00, '2', '2', '1231230002', '', 1, 1, 0, '2024-01-21 09:20:40', '2024-02-15 01:25:28'),
 (3, 'Assistants', '', 'assistants', '$2y$10$bFD6b78OVQxF6qy0Rx66v.xOqLAd7EqRt.LjOoGpJrrf2kpJ3WFZC', 'assistants@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, '1231230003', NULL, 1, 1, 0, '2024-01-21 09:20:40', NULL),
 (4, 'Students', '', 'students', '$2y$10$mX1G5dLstYqNl8GA1X8hXefVGpQar6PC68BYOcbb7FWhsUTBMJBGe', 'student@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, '1231320004', NULL, 1, 0, 0, '2024-01-21 09:20:40', NULL),
 (5, 'Smith Ins', '', 'ins', '$2y$10$E4BY2GTa2hBB/ZW0ytTRXOwL6XrqVZnprg9HfgLvOxmlohVMl6Etu', 'smith@gmail.com', NULL, 1, 1, 10.00, '1,2,3,6', '1,2', '1231230005', NULL, 1, 0, 0, '2024-01-21 09:20:40', '2024-02-08 14:17:56'),
 (8091, 'Jack ins', '', '', '$2y$10$gkjvOhVLjuV4g7lR7.GaV.6dx9XpsoBXRwSoLsM7ReHCTwt72iney', 'jack@gmail.com', NULL, 2, 2, 1.00, '1,2,4,6', '1', '123', NULL, 0, 1, 0, '2024-02-06 21:27:00', '2024-02-08 14:18:07'),
 (8092, 'will ins', '', '', '$2y$10$jQJznHHrBVOWWWAaDsVi.edFQI1tLrph7iPQZnCoQ0ahNaseRsKX6', 'will@gmail.com', NULL, 2, 3, 2.00, '2,3', '3', '9898989898', NULL, 0, 1, 0, '2024-02-08 19:48:46', NULL),
-(8093, 'ruth ins', '', '', '$2y$10$xmxsugdhXxWC1YbR3LwTGeau0w4XhDOtney/0n7isCmqsNbGSglNG', 'ruth@gmail.com', NULL, 4, 4, 10.00, '1,2,6', '1', '7897897899', NULL, 0, 1, 0, '2024-02-08 19:49:25', NULL);
+(8093, 'ruth ins', '', '', '$2y$10$xmxsugdhXxWC1YbR3LwTGeau0w4XhDOtney/0n7isCmqsNbGSglNG', 'ruth@gmail.com', NULL, 4, 4, 10.00, '1,2,6', '1', '7897897899', NULL, 0, 0, 0, '2024-02-08 19:49:25', NULL);
 
 -- --------------------------------------------------------
 
@@ -546,7 +549,7 @@ ALTER TABLE `rank`
 -- AUTO_INCREMENT for table `schedule`
 --
 ALTER TABLE `schedule`
-  MODIFY `schedule_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `schedule_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `schedule_bk`

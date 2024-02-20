@@ -49,6 +49,7 @@ define('ADMIN_LINK',APP_URL.ADMIN);
 define('PUBLIC_FILE',URL.'public/');
 define('ADMIN_ASSETS',URL.'public/admin/');
 define('WAIT','Wait...');
+define('CURRENCY','$');
 
 define('BASH_PATH', FCPATH); 
 define('EXPORT_PDF', BASH_PATH.'public/uploads/pdf_export/');

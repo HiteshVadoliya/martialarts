@@ -57,7 +57,18 @@ $routes->get('/admin/schedule/edit/(:any)', 'Admin\ScheduleController::add/$1');
 $routes->post('/admin/schedule/store/', 'Admin\ScheduleController::store');
 $routes->post('/admin/schedule/delete/', 'Admin\ScheduleController::delete');
 $routes->post('/admin/schedule/status/', 'Admin\ScheduleController::status');
+$routes->post('/admin/schedule/Classstatus/', 'Admin\ScheduleController::Classstatus');
 $routes->post('/admin/schedule/export_pdf/', 'Admin\ScheduleController::export_pdf');
+
+$routes->get('/admin/payment/', 'Admin\PaymentController::index');
+$routes->post('/admin/payment/ajax_list/', 'Admin\PaymentController::ajax_list');
+$routes->get('/admin/payment/add/', 'Admin\PaymentController::add');
+$routes->get('/admin/payment/edit/(:any)', 'Admin\PaymentController::add/$1');
+$routes->post('/admin/payment/store/', 'Admin\PaymentController::store');
+$routes->post('/admin/payment/delete/', 'Admin\PaymentController::delete');
+$routes->post('/admin/payment/status/', 'Admin\PaymentController::status');
+
+
 
 $routes->get('/admin/assigning/', 'Admin\AssignController::index');
 $routes->post('/admin/assigning/ajax_list/', 'Admin\AssignController::ajax_list');

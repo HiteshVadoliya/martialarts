@@ -18,7 +18,7 @@ $action = $uri->getTotalSegments() >= 3 && $uri->getSegment(3) ? $uri->getSegmen
                 <img src="<?php echo base_url();?>public/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block"><?php echo $_SESSION['first_name']." ".$_SESSION['last_name'];?></a>
+                <a href="#" class="d-block"><?php echo ucfirst($_SESSION['first_name'])." ".ucfirst($_SESSION['last_name']);?></a>
             </div>
         </div>
 
@@ -37,38 +37,61 @@ $action = $uri->getTotalSegments() >= 3 && $uri->getSegment(3) ? $uri->getSegmen
         <!-- Sidebar Menu -->
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                
-                <li class="nav-item">
-                    <a href="<?php echo base_url('admin/dashboard'); ?>" class="nav-link <?= $segment AND $segment == "questions" ? 'active' : ''; ?>">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
+                <?php
+                if (session('role') == 2) {
+                    ?>
+                    <li class="nav-item">
+                        <a href="<?php echo base_url('admin/dashboard'); ?>" class="nav-link <?= $segment AND $segment == "questions" ? 'active' : ''; ?>">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
 
-                <li class="nav-item">
-                    <a href="<?php echo base_url('admin/schedule'); ?>" class="nav-link <?= $segment AND $segment == "schedule" ? 'active' : ''; ?>">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Schedules</p>
-                    </a>
-                </li>
-                <!-- <li class="nav-item">
-                    <a href="<?php echo base_url('admin/assigning'); ?>" class="nav-link <?= $segment AND $segment == "assigning" ? 'active' : ''; ?>">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Assigning</p>
-                    </a>
-                </li> -->
-                <li class="nav-item">
-                    <a href="<?php echo base_url('admin/classes'); ?>" class="nav-link <?= $segment AND $segment == "classes" ? 'active' : ''; ?>">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Classes </p>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="<?php echo base_url('admin/users'); ?>" class="nav-link <?= $segment AND $segment == "users" ? 'active' : ''; ?>">
-                        <i class="far fa-circle nav-icon"></i>
-                        <p>Users</p>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="<?php echo base_url('admin/schedule'); ?>" class="nav-link <?= $segment AND $segment == "schedule" ? 'active' : ''; ?>">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Schedules</p>
+                        </a>
+                    </li>
+                    <?php
+                } else if (session('role') == 1) {
+                    ?>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('admin/dashboard'); ?>" class="nav-link <?= $segment AND $segment == "questions" ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Dashboard</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('admin/schedule'); ?>" class="nav-link <?= $segment AND $segment == "schedule" ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Schedules</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('admin/payment'); ?>" class="nav-link <?= $segment AND $segment == "payment" ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Payment</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('admin/classes'); ?>" class="nav-link <?= $segment AND $segment == "classes" ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Classes </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo base_url('admin/users'); ?>" class="nav-link <?= $segment AND $segment == "users" ? 'active' : ''; ?>">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Users</p>
+                            </a>
+                        </li>
+                    <?php
+                }
+                ?>
+                
+               
 
                 
 

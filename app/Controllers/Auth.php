@@ -55,21 +55,23 @@ class Auth extends BaseController
                         //if($ddebug){ echo ' === [ role_arr ] ===> <pre>'; print_r($role_arr); echo '</pre>'; }
 
                         foreach($role_arr as $rol){
-                            $roles[] = $rol['role_pid'];
+                            $roles = $rol['role_pid'];
+                            // $roles[] = $rol['role_pid'];
                         }
-                        //if($ddebug){ echo ' === [ roles ] ===> <pre>'; print_r($roles); echo '</pre>'; }
+                        // if($ddebug){ echo ' === [ roles ] ===> <pre>'; print_r($roles); echo '</pre>'; } 
 
                         $admin_data = array(
                             //'result' => $result,
                             'is_admin_login' => true,
                             'user_id' => $result[0]['user_id'],
                             'roles' => $roles,
+                            'role' => $roles,
                             'first_name' => $result[0]['fname'],
                             'last_name' => $result[0]['lname'],
                             'username' => $result[0]['username'],
                             'image' => $result[0]['image'],
                         );
-                        //if($ddebug){ echo ' === [ admin_data ] ===> <pre>'; print_r($admin_data); echo '</pre>'; }
+                        // if($ddebug){ echo ' === [ admin_data ] ===> <pre>'; print_r($admin_data); echo '</pre>'; } die;
                         
                         $this->session->set($admin_data);
                         $this->accessCtrl->set_user_access();
