@@ -67,7 +67,7 @@ $routes->get('/admin/payment/edit/(:any)', 'Admin\PaymentController::add/$1');
 $routes->post('/admin/payment/store/', 'Admin\PaymentController::store');
 $routes->post('/admin/payment/delete/', 'Admin\PaymentController::delete');
 $routes->post('/admin/payment/status/', 'Admin\PaymentController::status');
-
+$routes->post('/admin/payment/export_pdf/', 'Admin\PaymentController::export_pdf');
 
 
 $routes->get('/admin/assigning/', 'Admin\AssignController::index');

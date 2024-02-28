@@ -28,7 +28,7 @@
                 <?php
             }
             ?>
-            <a class="btn btn-primary export_pdf" href="javascript::"><i class="" ></i>Export PDF (comming soon) </a>
+            <!-- <a class="btn btn-primary export_pdf" href="javascript::"><i class="" ></i>Export PDF (comming soon) </a> -->
         </div>
     </section>
 

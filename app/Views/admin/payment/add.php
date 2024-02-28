@@ -151,6 +151,9 @@
                     <div class="card-footer">
                             <button type="submit" class="btn btn-primary custom_submit"><?= (isset($edit) && !empty($edit)) ? 'Update' : 'Next'; ?></button>
                             <a href="<?= base_url($url); ?>" type="button" class="btn btn-navbar">Back</a>
+                            <?php if(isset($edit) && !empty($edit)) { ?> 
+                            <a class="btn btn-danger export_pdf" href="javascript::" data-payment_id="<?= $edit['payment_id']; ?>" ><i class="" ></i>Export PDF </a>
+                            <?php } ?>
                     </div>
                     </form>
                 </div>
@@ -186,8 +189,36 @@
   
 <!-- Tempusdominus Bootstrap 4 -->
 <script src="<?php echo base_url();?>public/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-
+          
   <script>
+    $(document).on("click",".export_pdf",function(){
+        let payment_id = $(this).attr('data-payment_id');
+        
+        $.ajax(
+        {
+            url: '<?= site_url($url.'/export_pdf/')?>',
+            dataType: "JSON",
+            method:"POST",
+            data: { payment_id : payment_id },
+            success: function (response)
+            { 
+                pdf_download = site_url + 'public/uploads/pdf_export/' +response.filename;
+                setTimeout(function(){
+                    window.open(
+                        pdf_download,
+                        '_blank'
+                    );
+                },3000);
+                // if(response.status) {
+                //     toastr.success(response.msg);
+                // } else {
+                //     toastr.error(response.msg);
+                // } 
+                //$('#posts').DataTable().ajax.reload(null, false);
+            }
+        });        
+    }); 
+
     function addRow() {
       let myid = $("#myid").val();
       $(".main_row tr").removeAttr('class');

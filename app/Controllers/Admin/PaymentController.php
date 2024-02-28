@@ -363,21 +363,24 @@ class PaymentController extends BaseController
     function export_pdf() {
 
         $post = $this->request->getVar();
+        $payment_id = $post['payment_id'];
         
         $db = db_connect();
-		// $builder = $db->table( 'schedule' );
-		// $builder->where( array( 'isDelete' => 0, 'status' => 1 ) );
-		// $builder->orderBy('week', 'ASC');
-		// $builder->orderBy('day_number', 'ASC');
-		// $result = $builder->get()->getResultArray();
+		$builder = $db->table( 'payment p' );
+		$builder->where( array( 'p.isDelete' => 0, 'p.status' => 1, 'p.payment_main_id' => $payment_id ) );
+		$builder->join( 'tbl_user as u', 'u.user_id = p.instructor_pid' );
+		$data['payment_data'] = $builder->get()->getResultArray();
+        // echo '<pre>';
+        // print_r($data['payment_data']);
+        // echo '</pre>';
+        // die;
+        $builder = $db->table( 'payment p' );
+        $builder->where( array( 'p.isDelete' => 0, 'p.status' => 1, 'p.payment_id' => $payment_id ) );
+        $data['payment_main_data'] = $builder->get()->getRowArray();
 
-        $SchoolAllModel = new SchoolAllModel();;
-        $data['schools'] = $SchoolAllModel->where('status',1)->where('isDelete',0)->findAll();
-        $data['weekdays'] = HWTModel::get_row( 'weekdays', array( 'isDelete' => 0,'status' => 1 ), 'list' );
-             
         $htmlContent = view('admin/'.$this->folder.'pdf_details', $data);
         
-        $pdfName = "schedule_".date('mdY')."_".time().'.pdf'; 
+        $pdfName = "payment_".date('mdY')."_".time().'.pdf'; 
 
         if (!file_exists(EXPORT_PDF)) {
             mkdir(EXPORT_PDF, 0777, true);

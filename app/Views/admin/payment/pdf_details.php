@@ -97,7 +97,8 @@ use App\Models\HWTModel;
 </style>
 
 <table class="" cellspacing="0" cellpadding="0">   
-<center><h1>MASTER SCHEDULE</h1></center>
+<center><h1>PAYMENT DETAILS</h1></center>
+<center><h1><?= $payment_main_data['effective_date'] ?></h1></center>
 </table>
 <table class="" cellspacing="0" cellpadding="0">   
    <tr><td></td></tr>
@@ -105,58 +106,30 @@ use App\Models\HWTModel;
       <td align="left" width="100%">
          <table width="100%" class="border-pack" cellpadding="5" cellspacing="0" >
             <thead>
-                <tr>
-                    <?php
-                    if(isset($schools) && !empty($schools)) {
-                        foreach ($schools as $s_key => $s_value) {
-                            ?><td class="school_heading"><strong><?= strtoupper($s_value['school_title']) ?><strong></td><?php
-                        }
-                    }
-                    ?>
-                </tr>
+               <tr>
+                  <th>Instructor Rate ( <?= CURRENCY ?> )</th>
+                  <th>Hours</th>
+                  <th>Total</th>
+               </tr>
             </thead>
             <tbody>
-                <?php
-                $db = db_connect();
-
-                if(isset($weekdays) && !empty($weekdays)) {
-                    foreach ($weekdays as $week_key => $week_value) {
-                        if(isset($schools) && !empty($schools)) {
-                            echo '<tr>';
-                            foreach ($schools as $s_key => $s_value) {
-                                $school_id = $s_value['school_id'];
-                                $weekdays_pid = $week_value['weekdays_id'];
-                                $weekdays_day = $week_value['week_title'];
-                                
-                                $builder = $db->table( 'schedule' );
-                                $builder->where( array( 'isDelete' => 0, 'status' => 1, 'school_pid' => $school_id, 'weekday_pid' => $weekdays_pid, 'class_status' => 1 ) );
-                                $result_list = $builder->get()->getResultArray();
-                                ?>
-                                    <td>
-                                       <strong class="day_name"><?= strtoupper($weekdays_day) ?></strong>
-                                       <?php
-                                        if(isset($result_list) && !empty($result_list)) {
-                                            echo '<ul class="sch_ul_li" >';
-                                            foreach ($result_list as $res_key => $res_value) {
-                                                $schedule_id = $res_value['schedule_id'];
-                                                $s_data = HWTModel::get_schedule_details( $schedule_id );
-                                                $display_data = $s_data['day_time'].' '.$s_data['class_title'].' (<strong>'.$s_data['fname'].'</strong>)';
-                                                ?>
-                                                <li><?= $display_data ?></li>
-                                                <?php
-                                            }
-                                            echo '</ul>';
-                                        }
-                                        ?>
-
-                                    </td>                                
-                                <?php
-                            }
-                            echo '</tr>';
-                        }
-                    }
-                }
-                ?>              
+            <?php
+               if(isset($payment_data) && !empty($payment_data)) {
+                  foreach ($payment_data as $p_key =>$p_value) {
+                     $total_hrs = $p_value['total_hrs'];
+                     $total_payment = $p_value['total_payment'];
+                     $payment_id = $p_value['payment_id'];
+                     ?>
+                      <tr>
+                        <th><?= $p_value['fname'] ?> ( <?= $p_value['hourly_rate'] ?> )</th>
+                        <th><?= $p_value['total_hrs']; ?></th>
+                        <th><?= CURRENCY. $p_value['total_payment']; ?></th>
+                     </tr>                     
+                     <?php
+                     }
+                  }
+               ?>
+              
             </tbody>
          </table>
       </td>      
